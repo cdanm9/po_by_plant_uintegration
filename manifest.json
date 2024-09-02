@@ -1,0 +1,103 @@
+{
+	"_version": "1.14.0",
+	"sap.app": {
+		"id": "ns.po_by_plant",
+		"type": "card",
+		"title": "PO By Plant Card",
+		"subTitle": "UI5 Integration Card",
+		"applicationVersion": {
+			"version": "1.0.0"
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+        "deviceTypes": {"desktop": true, "phone": true, "tablet": true},
+		"icons": {
+			"icon": "sap-icon://list"
+		}
+	},
+	"sap.card": {
+		"type": "List",
+		"configuration": {
+			"destinations": {
+				"PurchaseOrderAdvanced": {
+					"name": "PurchaseOrderAdvanced",
+					"defaultUrl": "/odata/v4/pocreation/"   
+				}
+			},
+			"parameters": {
+				"title" : {
+					"value": "Total {{parameters.maxItems}} Orders"
+				},
+				"subTitle": {   
+					"value": "Top Orders"
+				},
+				"maxItems": {
+					"value": 5
+				},
+				"selectedCategoryName": {
+                	"value": "Purchase Order Company"
+            	}  
+			},
+			"filters": {
+            	"mainCategory": {
+					"value": "{{parameters.selectedCategoryName}}",
+					"type": "string",
+					"label": "Filter Company",
+					"description": "Filter Orders by Company.",
+					"item": {
+						"path": "/value",
+						"template": {
+							"key": "{CODE}",
+							"title": "{NAME}"
+						}
+					},
+					"data": {
+						"request": {
+							"url": "{{destinations.PurchaseOrderAdvanced}}/odata/v4/pocreation/CompanyMaster",
+							"withCredentials": true
+						}
+					}
+				}
+			}
+		},
+		"data": {
+			"request": {
+				"url": "{{destinations.PurchaseOrderAdvanced}}/odata/v4/pocreation/POHeader",
+				"withCredentials": true,
+				"parameters": {   
+		            "$filter": "CompanyCode eq '{filters>/mainCategory/value}'"
+	            }
+            },
+            "path": "/value"    
+        },
+        "designtime": "dt/configuration",   
+		"header": {        
+			"title": "Purchase Order {filters>/mainCategory/selectedItem/title} Company",
+			"subTitle": "Purchase Order Request",
+			"icon": {
+				"src": "sap-icon://customer"    
+			},
+			"status": {
+				"text": "Purchase Orders"
+			}
+		},
+		"content": {   
+            "item": {
+                "title": "{PCode}",
+                "description": "{CompanyCode}",
+                "icon": {
+                    "src": "sap-icon://information"
+                },
+                "info": {
+                    "value": "{Total_Amount}",  
+                    "state": "Information"
+                }
+            },
+            "maxItems": 5
+		}
+	},
+    "sap.platform.mobilecards": {
+        "compatible": false
+    }
+}
